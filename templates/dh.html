@@ -1,0 +1,99 @@
+<div class="content-section hidden" id="visualization-section">
+                <h3><i class="fas fa-chart-bar"></i> Restaurant Analytics Dashboard</h3>
+    
+                <div class="dashboard-controls">
+                    <button id="refresh-dashboard" class="btn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button id="download-dashboard" class="btn secondary"><i class="fas fa-download"></i> Download Dashboard</button>
+                </div>
+    
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h4>Transaction Trend</h4>
+                        <div class="chart-container" id="trend-chart">
+                            <img id="trend-chart-img" src="" alt="Trend Chart">
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h4>Spending by Category</h4>
+                        <div class="chart-container" id="category-chart">
+                            <img id="category-chart-img" src="" alt="Category Chart">
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h4>Top Recipients</h4>
+                        <div class="chart-container" id="recipient-chart">
+                            <img id="recipient-chart-img" src="" alt="Recipient Chart">
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h4>Anomaly Detection</h4>
+                        <div class="chart-container" id="anomaly-chart">
+                            <img id="anomaly-chart-img" src="" alt="Anomaly Chart">
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="anomaly-details">
+                        <h4>Anomaly Details</h4>
+                        <table id="anomaly-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Recipient</th>
+                                <th>Category</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for anomaly in anomalies %}
+                            <tr class="anomaly-row">
+                            <td>{{ anomaly.date.strftime('%Y-%m-%d') }}</td>
+                            <td>₦{{ "%.2f"|format(anomaly.amount) }}</td>
+                            <td>{{ anomaly.recipient }}</td>
+                            <td>{{ anomaly.category }}</td>
+                            <td>{{ anomaly.anomaly_reason }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                            <td colspan="5">No anomalies detected</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+<!-- Revenue Chart -->
+                    <div class="dashboard-card">
+                        <div id="revenue-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Revenue Trend</h4>
+                            </div>
+                            <canvas id="revenue-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Items Chart -->
+                    <div class="dashboard-card">
+                        <div id="top-items-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Top Items</h4>
+                            </div>
+                            <canvas id="top-items-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap Chart -->
+                    <div class="dashboard-card">
+                        <div id="heatmap-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Sales Heatmap</h4>
+                            </div>
+                            <canvas id="heatmap-chart"></canvas>
+                        </div>
+                    </div>

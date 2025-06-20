@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Financial Data Visualization</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Login</h2>
+            {% if success %}
+            <div class="success-message">
+                <span class="success-icon">✓</span>
+                <p>{{ success }}</p>
+            </div>
+            {% endif %}
+            {% if error %}
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+            <form id="loginForm" action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <p class="auth-link">Don't have an account? <a href="/register">Register here</a></p>
+            <p class="auth-link"><a href="/">Back to Home</a></p>
+            {% if error %}
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

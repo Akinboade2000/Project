@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Financial Data Visualization</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Create Account</h2>
+            <form id="registerForm" action="/register" method="POST">
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password</label>
+                    <input type="password" id="regConfirmPassword" name="confirm_password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <p class="auth-link">Already have an account? <a href="/login">Login here</a></p>
+            <p class="auth-link"><a href="/">Back to Home</a></p>
+            {% if error %}
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

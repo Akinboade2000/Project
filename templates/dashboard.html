@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Financial Data Visualization</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-chart-line"></i> Financial Analytics</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#upload"><i class="fas fa-file-upload"></i> Upload Data</a></li>
+                    <li><a href="#visualize"><i class="fas fa-chart-bar"></i> Visualize</a></li>
+                    <li><a href="#anomalies"><i class="fas fa-exclamation-triangle"></i> Anomalies</a></li>
+                    <li><a href="#reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h2>Financial Dashboard</h2>
+                <div class="user-info">
+                    <span>Welcome, {{ user_name }}</span>
+                    <div class="avatar">
+                        {{ user_name[0].upper() }}
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-section" id="dashboard-section">
+                <div class="stats-container">
+                    <div class="stat-card primary">
+                        <h4>Total Transactions</h4>
+                        <p id="total-transactions">{{ transactions|length }}</p>
+                    </div>
+                    <div class="stat-card secondary">
+                        <h4>Total Amount</h4>
+                        <p id="total-amount">₦{{ "%.2f"|format(transactions|sum(attribute='amount')) }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Anomalies Detected</h4>
+                        <p id="anomalies-count">{{ anomalies|length }}</p>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-header">
+                        <h3>Transaction Overview</h3>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <img src="data:image/png;base64,{{ plot_data }}" 
+                                alt="Transaction Visualization" 
+                                class="chart-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section hidden" id="upload-section">
+                <h3><i class="fas fa-file-upload"></i> Upload Financial Data</h3>
+                <div class="import-options">
+                    <div class="import-card">
+                        <h4>Upload CSV File</h4>
+                        <p>Upload your financial data in CSV format. Ensure it includes date, amount, category, and description columns.</p>
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="file-upload-area" id="csv-drop-zone">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your CSV file here or click to browse</p>
+                                <input type="file" id="csv-upload" name="file" accept=".csv">
+                            </div>
+                            <button type="submit" class="btn">Upload Data</button>
+                        </form>
+                        <div id="upload-status"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="visualize-section">
+                <h3><i class="fas fa-chart-bar"></i> Restaurant Analytics Dashboard</h3>
+                
+                <div class="dashboard-controls">
+                    <div class="viz-controls">
+                        <select id="time-period">
+                            <option value="day">Daily</option>
+                            <option value="week">Weekly</option>
+                            <option value="month">Monthly</option>
+                        </select>
+                        
+                        <button id="refresh-dashboard" class="btn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button id="download-dashboard" class="btn secondary"><i class="fas fa-download"></i> Download Report</button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="stats-container">
+                    <div class="stat-card primary">
+                        <h4>Total Revenue (Month)</h4>
+                        <p id="total-revenue">₦0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Avg. Daily Sales</h4>
+                        <p id="avg-daily">₦0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Busiest Time</h4>
+                        <p id="busiest-time">-</p>
+                    </div>
+                    <div class="stat-card secondary">
+                        <h4>Top Selling Item</h4>
+                        <p id="top-item">-</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Revenue Trend Chart -->
+                    <div class="dashboard-card">
+                        <div id="revenue-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Revenue Trend</h4>
+                            </div>
+                            <canvas id="revenue-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Categories Chart -->
+                    <div class="dashboard-card">
+                        <div id="top-items-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Top Categories</h4>
+                            </div>
+                            <canvas id="top-items-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap Methods Chart -->
+                    <div class="dashboard-card">
+                        <div id="heatmap-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Heatmap</h4>
+                            </div>
+                            <canvas id="heatmap-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods Chart -->
+                    <div class="dashboard-card">
+                        <div id="payment-methods-chart-container" class="chart-container">
+                            <div class="chart-header">
+                                <h4>Payment Methods</h4>
+                            </div>
+                            <canvas id="payment-methods-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anomaly-details">
+                    <h4>Menu Performance</h4>
+                    <table id="menu-performance-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Qty Sold</th>
+                                <th>Total Revenue</th>
+                                <th>Profit Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menu-performance-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-section hidden" id="anomalies-section">
+                <h3><i class="fas fa-exclamation-triangle"></i> Anomaly Detection</h3>
+                <div class="anomaly-results">
+                    <div class="anomaly-list">
+                        <h4>Detected Anomalies ({{ anomalies|length }})</h4>
+                        <ul>
+                            {% for anomaly in anomalies %}
+                            <li>
+                                <strong>{{ anomaly.date.strftime('%Y-%m-%d') }}</strong>: 
+                                {{ anomaly.anomaly_reason }} (₦{{ "%.2f"|format(anomaly.amount) }} to {{ anomaly.recipient }})
+                            </li>
+                            {% else %}
+                            <li>No anomalies detected</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section hidden" id="reports-section">
+                <h3><i class="fas fa-file-alt"></i> Generate Reports</h3>
+                <div class="report-options">
+                    <div class="report-card">
+                        <h4>Summary Report</h4>
+                        <p>Overview of all transactions with totals and averages</p>
+                        <button class="btn generate-report" data-type="summary">Generate</button>
+                    </div>
+                    <div class="report-card">
+                        <h4>Anomaly Report</h4>
+                        <p>Detailed list of all detected anomalies</p>
+                        <button class="btn generate-report" data-type="anomalies">Generate</button>
+                    </div>
+                </div>
+                <div id="report-output" class="report-preview hidden">
+                    <h4 id="report-title"></h4>
+                    <div id="report-content"></div>
+                    <button id="print-report" class="btn">Print Report</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/static/js/utils.js"></script>
+    
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
